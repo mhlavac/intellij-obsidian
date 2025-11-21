@@ -4,26 +4,110 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
 
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
-- [ ] Adjust the [pluginGroup](./gradle.properties) and [pluginName](./gradle.properties), as well as the [id](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [ ] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the `MARKETPLACE_ID` in the above README badges. You can obtain it once the plugin is published to JetBrains Marketplace.
-- [ ] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
-- [ ] Configure the [CODECOV_TOKEN](https://docs.codecov.com/docs/quick-start) secret for automated test coverage reports on PRs
-
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+Obsidian integration for IntelliJ IDEA that brings Obsidian-style markdown features to your IDE.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+**Features:**
+- **WikiLink Support**: Navigate between notes using `[[FileName]]`, `[[Path/To/File]]`, or `[[FileName|Display Text]]` syntax
+- **Smart Navigation**: Cmd/Ctrl+Click on WikiLinks to jump to referenced files
+- **Auto-completion**: Get suggestions for note names while typing WikiLinks
+- **Syntax Highlighting**: Visual indicators for WikiLinks in markdown files
+- **Daily Notes**: Quick access to daily notes with keyboard shortcut (Ctrl+Alt+D) following the `YYYY-MM-DD.md` format
+- **Line Markers**: Visual navigation aids for daily note references
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
+Perfect for developers who use Obsidian for note-taking and want seamless integration with their IDE workflow.
+
+To keep everything working, do not remove `<!-- ... -->` sections.
 <!-- Plugin description end -->
+
+## Development Status
+
+This plugin is in active development. Current features are stable, with more Obsidian integration features planned.
+
+### Completed
+- [x] Project setup and configuration
+- [x] WikiLink reference resolution
+- [x] Navigation and auto-completion
+- [x] Daily note functionality
+- [x] Syntax highlighting
+
+### Before Publishing
+- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate)
+- [ ] Set up [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) (see setup guide below)
+- [ ] [Publish plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time
+- [ ] Update `MARKETPLACE_ID` in README badges after publication
+- [ ] Set up [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate) for automated publishing
+
+## Plugin Signing Setup
+
+To publish your plugin to the JetBrains Marketplace, you need to set up plugin signing. This ensures the integrity and authenticity of your plugin.
+
+### Step 1: Generate Certificate Chain
+
+You have two options:
+
+**Option A: Using JetBrains Marketplace Hub (Recommended)**
+1. Go to your [JetBrains Marketplace profile](https://plugins.jetbrains.com/author/me)
+2. Navigate to the plugin signing section
+3. Generate or upload your certificate through the web interface
+
+**Option B: Generate Manually**
+```bash
+# Generate a new private key and certificate
+openssl req -x509 -newkey rsa:4096 -keyout private.pem -out chain.crt -days 3650 -nodes
+```
+
+### Step 2: Set Up Environment Variables
+
+You need to configure three secrets as environment variables or GitHub secrets:
+
+1. **CERTIFICATE_CHAIN**: The contents of your certificate file (chain.crt)
+   ```bash
+   cat chain.crt | base64
+   ```
+
+2. **PRIVATE_KEY**: The contents of your private key file (private.pem)
+   ```bash
+   cat private.pem | base64
+   ```
+
+3. **PRIVATE_KEY_PASSWORD**: Password for the private key (empty string if no password)
+
+### Step 3: Configure for GitHub Actions
+
+Add these as secrets in your GitHub repository:
+
+1. Go to: `Settings` → `Secrets and variables` → `Actions`
+2. Click `New repository secret`
+3. Add each secret:
+   - `CERTIFICATE_CHAIN` (base64-encoded certificate)
+   - `PRIVATE_KEY` (base64-encoded private key)
+   - `PRIVATE_KEY_PASSWORD` (password or empty string)
+   - `PUBLISH_TOKEN` (from JetBrains Marketplace - for automated publishing)
+
+### Step 4: Local Signing (Optional)
+
+For local testing, set environment variables:
+
+```bash
+export CERTIFICATE_CHAIN=$(cat chain.crt | base64)
+export PRIVATE_KEY=$(cat private.pem | base64)
+export PRIVATE_KEY_PASSWORD=""
+
+# Test signing
+./gradlew signPlugin
+```
+
+The signed plugin will be in `build/distributions/` with `-signed` suffix.
+
+### Security Notes
+
+- **Never commit** your private key or certificate to the repository
+- Keep your private key secure and backed up
+- The certificate should be valid for several years (3650 days = 10 years)
+- Store your keys in a secure location (password manager, secrets vault, etc.)
+
+For more details, see the [official Plugin Signing documentation](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html).
 
 ## Installation
 

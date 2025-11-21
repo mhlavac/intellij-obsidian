@@ -34,6 +34,9 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.opentest4j)
 
+    // Gson for JSON parsing
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
         create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
@@ -129,6 +132,11 @@ kover {
 tasks {
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
+    }
+
+    test {
+        // Required to avoid "HeadlessException" or rendering issues in PSI tests
+        systemProperty("java.awt.headless", "true")
     }
 
     publishPlugin {

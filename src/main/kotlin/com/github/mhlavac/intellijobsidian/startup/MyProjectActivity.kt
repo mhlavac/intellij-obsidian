@@ -1,12 +1,14 @@
 package com.github.mhlavac.intellijobsidian.startup
 
-import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
+import com.github.mhlavac.intellijobsidian.services.ObsidianVaultService
 
 class MyProjectActivity : ProjectActivity {
 
     override suspend fun execute(project: Project) {
-        thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
+        // Trigger vault detection when project opens
+        project.service<ObsidianVaultService>().detectVault()
     }
 }

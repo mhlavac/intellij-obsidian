@@ -1,15 +1,100 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.mhlavac.intellijobsidian</id>
-    <name>intellij-obsidian</name>
+    <name>Obsidian Bridge</name>
     <vendor>mhlavac</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.intellij.plugins.markdown</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.mhlavac.intellijobsidian.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="com.github.mhlavac.intellijobsidian.toolWindow.PeriodicNotesToolWindowFactory"
+                    id="Periodic Notes"
+                    anchor="right"/>
         <postStartupActivity implementation="com.github.mhlavac.intellijobsidian.startup.MyProjectActivity" />
+
+        <!-- Notification group for Obsidian -->
+        <notificationGroup id="Obsidian Notifications" displayType="BALLOON"/>
+
+        <!-- WikiLink Support -->
+        <psi.referenceContributor
+                language="Markdown"
+                implementation="com.github.mhlavac.intellijobsidian.references.ObsidianReferenceContributor"/>
+
+        <!-- WikiLink Documentation (hover tooltips) -->
+        <lang.documentationProvider
+                language="Markdown"
+                implementationClass="com.github.mhlavac.intellijobsidian.documentation.ObsidianDocumentationProvider"/>
+
+        <!-- WikiLink Navigation (Cmd+Click) -->
+        <gotoDeclarationHandler
+                implementation="com.github.mhlavac.intellijobsidian.navigation.ObsidianGotoDeclarationHandler"/>
+
+        <completion.contributor
+                language="Markdown"
+                implementationClass="com.github.mhlavac.intellijobsidian.completion.ObsidianCompletionContributor"/>
+
+        <!-- WikiLink Highlighting -->
+        <annotator
+                language="Markdown"
+                implementationClass="com.github.mhlavac.intellijobsidian.annotators.WikiLinkAnnotator"/>
+
+        <!-- Daily Note Line Markers -->
+        <codeInsight.lineMarkerProvider
+                language="Markdown"
+                implementationClass="com.github.mhlavac.intellijobsidian.markers.DailyNoteLineMarkerProvider"/>
     </extensions>
+
+    <actions>
+        <!-- Periodic Notes Actions -->
+        <group id="PeriodicNotesGroup" text="Periodic Notes" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+
+            <action id="ObsidianBridge.OpenDailyNote"
+                    class="com.github.mhlavac.intellijobsidian.actions.OpenDailyNoteAction"
+                    text="Periodic Note - Open Daily Note"
+                    description="Open or create today's daily note">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt D"/>
+            </action>
+
+            <action id="ObsidianBridge.OpenWeeklyNote"
+                    class="com.github.mhlavac.intellijobsidian.actions.OpenWeeklyNoteAction"
+                    text="Periodic Note - Open Weekly Note"
+                    description="Open or create this week's weekly note">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt W"/>
+            </action>
+
+            <action id="ObsidianBridge.OpenMonthlyNote"
+                    class="com.github.mhlavac.intellijobsidian.actions.OpenMonthlyNoteAction"
+                    text="Periodic Note - Open Monthly Note"
+                    description="Open or create this month's monthly note">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt M"/>
+            </action>
+
+            <action id="ObsidianBridge.OpenQuarterlyNote"
+                    class="com.github.mhlavac.intellijobsidian.actions.OpenQuarterlyNoteAction"
+                    text="Periodic Note - Open Quarterly Note"
+                    description="Open or create this quarter's quarterly note">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Q"/>
+            </action>
+
+            <action id="ObsidianBridge.OpenYearlyNote"
+                    class="com.github.mhlavac.intellijobsidian.actions.OpenYearlyNoteAction"
+                    text="Periodic Note - Open Yearly Note"
+                    description="Open or create this year's yearly note">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Y"/>
+            </action>
+        </group>
+
+        <!-- Quick access to Daily Note in toolbar -->
+        <action id="ObsidianBridge.OpenDailyNoteToolbar"
+                class="com.github.mhlavac.intellijobsidian.actions.OpenDailyNoteAction"
+                text="Open Daily Note"
+                description="Open or create today's daily note">
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <add-to-group group-id="MainToolbarLeft" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>
